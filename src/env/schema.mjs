@@ -7,7 +7,10 @@ import { z } from 'zod';
  */
 export const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
-  NODE_ENV: z.enum(['development', 'test', 'production']),
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    // TODO: see what this means on deployment
+    .default('development'),
   APP_URL: z.string().url(),
   WS_URL: z.string().url(),
 });

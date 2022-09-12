@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev:wss": "cross-env PORT=3001 nodemon --watch src --ext .ts,.tsx,js,jsx --signal SIGTERM --exec \"tsx --tsconfig tsconfig.server.json src/server/ws/wssDevServer.ts\"",
+    "dev:next": "next dev",
+    "dev": "run-p dev:*",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
@@ -34,11 +36,15 @@
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "autoprefixer": "^10.4.7",
+    "cross-env": "^7.0.3",
     "eslint": "8.22.0",
     "eslint-config-next": "12.2.5",
+    "nodemon": "^2.0.19",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8.4.14",
     "prisma": "^4.1.0",
     "tailwindcss": "^3.1.6",
+    "tsx": "^3.9.0",
     "typescript": "4.7.4"
   },
   "ct3aMetadata": {
