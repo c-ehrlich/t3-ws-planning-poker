@@ -1,14 +1,36 @@
 // src/utils/trpc.ts
-import { httpBatchLink, loggerLink } from "@trpc/client";
-import { createTRPCNext } from "@trpc/next";
-import type { AppRouter } from "../server/trpc/router";
-import superjson from "superjson";
+import {
+  createWSClient,
+  httpBatchLink,
+  loggerLink,
+  wsLink,
+} from '@trpc/client';
+import { createTRPCNext } from '@trpc/next';
+import type { AppRouter } from '../server/trpc/router';
+import superjson from 'superjson';
+import { env } from '../env/server.mjs';
 
-const getBaseUrl = () => {
-  if (typeof window !== "undefined") return ""; // browser should use relative url
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
-  return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
-};
+const { APP_URL, WS_URL } = env;
+
+function getEndingLink() {
+  if (typeof window === 'undefined') {
+    return httpBatchLink({
+      url: `${APP_URL}/api/trpc`,
+    });
+  }
+  const client = createWSClient({
+    url: WS_URL,
+  });
+  return wsLink<AppRouter>({
+    client,
+  });
+}
+
+// const getBaseUrl = () => {
+//   if (typeof window !== 'undefined') return ''; // browser should use relative url
+//   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
+//   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
+// };
 
 export const trpc = createTRPCNext<AppRouter>({
   config() {
@@ -17,12 +39,13 @@ export const trpc = createTRPCNext<AppRouter>({
       links: [
         loggerLink({
           enabled: (opts) =>
-            process.env.NODE_ENV === "development" ||
-            (opts.direction === "down" && opts.result instanceof Error),
+            process.env.NODE_ENV === 'development' ||
+            (opts.direction === 'down' && opts.result instanceof Error),
         }),
-        httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
-        }),
+        // httpBatchLink({
+        //   url: `${getBaseUrl()}/api/trpc`,
+        // }),
+        getEndingLink(),
       ],
     };
   },
