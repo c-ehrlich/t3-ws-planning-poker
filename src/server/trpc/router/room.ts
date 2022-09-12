@@ -1,7 +1,8 @@
-import EventEmitter from 'events';
-import { z } from 'zod';
-import { createRoom } from '../../db/room/roomDbQueries';
-import { t } from '../trpc';
+import { TRPCError } from "@trpc/server";
+import EventEmitter from "events";
+import { z } from "zod";
+import { createRoom } from "../../db/room/roomDbQueries";
+import { t } from "../trpc";
 
 interface MyEvents {
   join: (name: string) => void;
@@ -26,24 +27,27 @@ const ee = new MyEventEmitter();
 export const roomRouter = t.router({
   createRoom: t.procedure.mutation(async ({ ctx }) => {
     const room = await createRoom({ prisma: ctx.prisma });
+    if (!room) {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    }
     return room;
   }),
 
   joinRoom: t.procedure
     .input(z.object({ publicId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return 'TODO';
+      return { foo: "bar" };
     }),
 
   leaveRoom: t.procedure
     .input(z.object({ publicId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return 'TODO';
+      return "TODO";
     }),
 
   roomMembers: t.procedure
     .input(z.object({ publicId: z.string() }))
     .subscription(() => {
-      return 'TODO';
+      return "TODO";
     }),
 });
