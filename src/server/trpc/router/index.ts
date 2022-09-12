@@ -1,9 +1,11 @@
 // src/server/router/index.ts
-import { t } from "../trpc";
+import { t } from '../trpc';
 
-import { exampleRouter } from "./example";
+import { exampleRouter } from './example';
 
 export const appRouter = t.router({
+  healthcheck: t.procedure.query(() => 'ok'),
+
   example: exampleRouter,
 });
 
