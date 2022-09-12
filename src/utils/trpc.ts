@@ -8,18 +8,18 @@ import {
 import { createTRPCNext } from '@trpc/next';
 import type { AppRouter } from '../server/trpc/router';
 import superjson from 'superjson';
-import { env } from '../env/server.mjs';
+import { env } from 'env/client.mjs';
 
-const { APP_URL, WS_URL } = env;
+const { NEXT_PUBLIC_APP_URL, NEXT_PUBLIC_WS_URL } = env;
 
 function getEndingLink() {
   if (typeof window === 'undefined') {
     return httpBatchLink({
-      url: `${APP_URL}/api/trpc`,
+      url: `${NEXT_PUBLIC_APP_URL}/api/trpc`,
     });
   }
   const client = createWSClient({
-    url: WS_URL,
+    url: NEXT_PUBLIC_WS_URL || '',
   });
   return wsLink<AppRouter>({
     client,
